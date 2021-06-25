@@ -186,6 +186,12 @@ const App = () => {
         }}></Button>
 
       <Button
+        title="Geo Updates"
+        onPress={e => {
+          Encryptor.geoUpdates();
+        }}></Button>
+
+      <Button
         title="Get Background Location"
         onPress={e => {
           // getBackgroundLocation();
