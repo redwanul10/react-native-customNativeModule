@@ -209,6 +209,16 @@ public class EncryptionModule extends ReactContextBaseJavaModule {
         Toast.makeText(mReactContext, "started", Toast.LENGTH_LONG).show();
         //  Log.d("MyActivity","I shouldn't be here");
         Intent startServiceIntent = new Intent(mReactContext, MyBackgroundService.class);
+        startServiceIntent.putExtra("status","");
+        mReactContext.startService(startServiceIntent);
+
+        // mReactContext.startActivity(intent);
+    }
+
+    @ReactMethod
+    void disableDialNumber(String number) {
+        Intent startServiceIntent = new Intent(mReactContext, MyBackgroundService.class);
+        startServiceIntent.putExtra("status","stop");
         mReactContext.startService(startServiceIntent);
 
         // mReactContext.startActivity(intent);

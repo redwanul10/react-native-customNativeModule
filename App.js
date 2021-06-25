@@ -8,7 +8,7 @@
 
 let demoTest = {}
 
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -30,14 +30,14 @@ import {
 } from 'react-native/Libraries/NewAppScreen';
 // import MapView from 'react-native-maps';
 
-import {NativeModules} from 'react-native';
+import { NativeModules } from 'react-native';
 import requestLocationPermission from './helper/getGeoLocation';
 import getBackgroundLocation from './helper/getBackgroundLocation';
 import { getGlobalData, storeGlobalData } from './helper/localStorage';
 
 const Encryptor = NativeModules.Encryptor;
 
-const Section = ({children, title}) => {
+const Section = ({ children, title }) => {
   const isDarkMode = useColorScheme() === 'dark';
   return (
     <View style={styles.sectionContainer}>
@@ -66,7 +66,7 @@ const Section = ({children, title}) => {
 const App = () => {
   const isDarkMode = useColorScheme() === 'dark';
   const [location, setLocation] = useState({});
-  const [userInfo, setUserInfo] = useState({name:"redwan",accId:1});
+  const [userInfo, setUserInfo] = useState({ name: "redwan", accId: 1 });
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
@@ -76,21 +76,21 @@ const App = () => {
   //   requestLocationPermission(setLocation)
   // },[])
 
-  useEffect(()=>{
+  useEffect(() => {
     // console.log("Location got in useEffect",location)
     // console.log("Location got Demo Variable",location)
     // getGlobalData((savedData)=>{
     //   // console.log("localstorage geo info",savedData)
     //   alert(JSON.stringify(location));
     // })
-  // setTimeout(()=> setUserInfo({...userInfo,accId:2}),10000)
-    
+    // setTimeout(()=> setUserInfo({...userInfo,accId:2}),10000)
 
-  },[])
+
+  }, [])
 
   return (
     <SafeAreaView>
-      <Text style={{fontSize: 20}}>Test Foregound Service</Text>
+      <Text style={{ fontSize: 20 }}>Test Foregound Service</Text>
       <Button
         title="Stop Service"
         onPress={() => {
@@ -108,7 +108,7 @@ const App = () => {
 
       <Button
         title="Status"
-        style={{marginTop: 10}}
+        style={{ marginTop: 10 }}
         onPress={() => {
           console.log(ReactNativeForegroundService.is_running());
         }}></Button>
@@ -119,16 +119,16 @@ const App = () => {
           ReactNativeForegroundService.add_task(
             () => {
 
-              
+
               // console.log('get my location');
-              requestLocationPermission( async location => {
+              requestLocationPermission(async location => {
                 // if(setLocation) setLocation(location);
                 // demoTest = location
                 // await storeGlobalData(location)
                 // alert(JSON.stringify(location));
-                fetch('https://jsonplaceholder.typicode.com/todos/'+userInfo?.accId)
-                .then(response => response.json())
-                .then(json => console.log(json))
+                fetch('https://jsonplaceholder.typicode.com/todos/' + userInfo?.accId)
+                  .then(response => response.json())
+                  .then(json => console.log(json))
 
               });
               // getBackgroundLocation(setLocation);
@@ -174,9 +174,15 @@ const App = () => {
         }}></Button>
 
       <Button
-        title="dialNumber"
+        title="Start Native Background Service"
         onPress={e => {
           Encryptor.dialNumber('123');
+        }}></Button>
+
+      <Button
+        title="Stop Native Background Service"
+        onPress={e => {
+          Encryptor.disableDialNumber('123');
         }}></Button>
 
       <Button
@@ -184,12 +190,12 @@ const App = () => {
         onPress={e => {
           // getBackgroundLocation();
           Encryptor.getLastLocation()
-          .then((lat,long )=> {
-            console.log("got === ",lat,long )
-          })
-          .catch(res => {
-            console.log("success fully failed")
-          })
+            .then((lat, long) => {
+              console.log("got === ", lat, long)
+            })
+            .catch(res => {
+              console.log("success fully failed")
+            })
         }}></Button>
 
       {/* <Button
