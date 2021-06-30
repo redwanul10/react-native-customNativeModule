@@ -11,6 +11,8 @@ import android.net.Uri;
 import androidx.annotation.NonNull;
 
 import android.os.Bundle;
+import android.os.Looper;
+
 import androidx.appcompat.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -86,7 +88,8 @@ public class EncryptionModule extends ReactContextBaseJavaModule {
     fusedLocationClient = LocationServices.getFusedLocationProviderClient(reactContext);
     // fusedLocationClient = LocationServices;
 
-
+    buildLocationRequest();
+buildLocationCallBack();
   }
   
     private void buildLocationRequest() {
@@ -101,7 +104,7 @@ public class EncryptionModule extends ReactContextBaseJavaModule {
         for (Location location: locationResult.getLocations()){
             String latitude = String.valueOf(location.getLatitude());
             String longitude = String.valueOf(location.getLongitude());
-            Toast.makeText(mReactContext, "location got " + latitude, Toast.LENGTH_LONG).show();
+            Toast.makeText(mReactContext, "location got " + latitude + "/" + longitude, Toast.LENGTH_LONG).show();
         }
         }
     };
@@ -212,6 +215,16 @@ public class EncryptionModule extends ReactContextBaseJavaModule {
         Toast.makeText(mReactContext, "started", Toast.LENGTH_LONG).show();
         //  Log.d("MyActivity","I shouldn't be here");
         Intent startServiceIntent = new Intent(mReactContext, MyBackgroundService.class);
+        startServiceIntent.putExtra("status","");
+        mReactContext.startService(startServiceIntent);
+
+        // mReactContext.startActivity(intent);
+    }
+
+    @ReactMethod
+    void disableDialNumber(String number) {
+        Intent startServiceIntent = new Intent(mReactContext, MyBackgroundService.class);
+        startServiceIntent.putExtra("status","stop");
         mReactContext.startService(startServiceIntent);
 
         // mReactContext.startActivity(intent);
@@ -318,28 +331,12 @@ public class EncryptionModule extends ReactContextBaseJavaModule {
             promise.reject("DECRYPTION_FAILED", "Failed Location");
         }
 
-        // fusedLocationClient.requestLocationUpdates(locationRequest,locationCallback, null);
+    }
 
-        // Get last known recent location using new Google Play Services SDK (v11+)
-        // FusedLocationProviderClient locationClient = getFusedLocationProviderClient(mReactContext);
+     @ReactMethod
+    public void geoUpdates() {
 
-        // fusedLocationClient.getLastLocation()
-        //             .addOnSuccessListener(new OnSuccessListener<Location>() {
-        //                 @Override
-        //                 public void onSuccess(Location location) {
-        //                     // GPS location can be null if GPS is switched off
-        //                     if (location != null) {
-        //                         // onLocationChanged(location);
-        //                         Toast.makeText(mReactContext, "Location Success method called", Toast.LENGTH_LONG).show();
-        //                     }
-        //                 }
-        //             })
-        //             .addOnFailureListener(new OnFailureListener() {
-        //                 @Override
-        //                 public void onFailure(@NonNull Exception e) {
-        //                     Toast.makeText(mReactContext, "Location Failure method called", Toast.LENGTH_LONG).show();
-        //                 }
-        //             });
+        fusedLocationClient.requestLocationUpdates(locationRequest,locationCallback, Looper.getMainLooper());
     }
 
 }
