@@ -32,6 +32,7 @@ public class MainActivity extends ReactActivity {
   @Override
   protected void onStart() {
     super.onStart();
+    setTheme(R.layout.launch_screen);
     if(isOnNewIntent == true){}else {
         ForegroundEmitter();
     }

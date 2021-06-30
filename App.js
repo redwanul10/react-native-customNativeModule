@@ -1,238 +1,93 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow strict-local
- */
+import React, { useState } from "react";
+import { Button,Alert, Modal, StyleSheet, Text, Pressable, View, NativeModules } from "react-native";
 
-let demoTest = {}
-
-import React, {useEffect, useState} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-  Button,
-} from 'react-native';
-import ReactNativeForegroundService from '@supersami/rn-foreground-service';
-
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
-// import MapView from 'react-native-maps';
-
-import {NativeModules} from 'react-native';
-import requestLocationPermission from './helper/getGeoLocation';
-import getBackgroundLocation from './helper/getBackgroundLocation';
-import { getGlobalData, storeGlobalData } from './helper/localStorage';
-
-const Encryptor = NativeModules.Encryptor;
-
-const Section = ({children, title}) => {
-  const isDarkMode = useColorScheme() === 'dark';
+const App = () => {
+  const [modalVisible, setModalVisible] = useState(false);
   return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
+    <View style={styles.centeredView}>
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={modalVisible}
+        // onRequestClose={() => {
+        //   Alert.alert("Modal has been closed.");
+        //   setModalVisible(!modalVisible);
+        // }}
+      >
+        <View style={[styles.centeredView,{backgroundColor: "rgba(71, 67, 54,0.5)"}]}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>Hello World!</Text>
+            <Pressable
+              style={[styles.button, styles.buttonClose]}
+              onPress={() => setModalVisible(!modalVisible)}
+            >
+              <Text style={styles.textStyle}>Hide Modal</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
+      <Button
+      title="Print"
+        style={[styles.button, styles.buttonOpen]}
+        onPress={() => {
+          // NativeModules?.Encryptor.encrypt("")
+          NativeModules?.Encryptor.thermalPrinter()
+          .then(()=>{
+            alert("success")
+          })
+          .catch(err => {
+            alert("therm error")
+          })
+          
+        }}
+      >
+      </Button>
     </View>
   );
 };
 
-const App = () => {
-  const isDarkMode = useColorScheme() === 'dark';
-  const [location, setLocation] = useState({});
-  const [userInfo, setUserInfo] = useState({name:"redwan",accId:1});
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
-  // useEffect(()=>{
-  //   requestLocationPermission(setLocation)
-  // },[])
-
-  useEffect(()=>{
-    // console.log("Location got in useEffect",location)
-    // console.log("Location got Demo Variable",location)
-    // getGlobalData((savedData)=>{
-    //   // console.log("localstorage geo info",savedData)
-    //   alert(JSON.stringify(location));
-    // })
-  // setTimeout(()=> setUserInfo({...userInfo,accId:2}),10000)
-    
-
-  },[])
-
-  return (
-    <SafeAreaView>
-      <Text style={{fontSize: 20}}>Test Foregound Service</Text>
-      <Button
-        title="Stop Service"
-        onPress={() => {
-          // ReactNativeForegroundService.stop()
-          // ReactNativeForegroundService.remove_all_tasks()
-          // ReactNativeForegroundService.remove_task("taskid")
-          // ReactNativeForegroundService.update({
-          //   id: 'taskid',
-          //   title:"update demo",
-          //   message:"sdfsdfwer sdfewrwer",
-          // });
-
-          ReactNativeForegroundService.stop();
-        }}></Button>
-
-      <Button
-        title="Status"
-        style={{marginTop: 10}}
-        onPress={() => {
-          console.log(ReactNativeForegroundService.is_running());
-        }}></Button>
-
-      <Button
-        title="start"
-        onPress={() => {
-          ReactNativeForegroundService.add_task(
-            () => {
-
-              
-              // console.log('get my location');
-              requestLocationPermission( async location => {
-                // if(setLocation) setLocation(location);
-                // demoTest = location
-                // await storeGlobalData(location)
-                // alert(JSON.stringify(location));
-                fetch('https://jsonplaceholder.typicode.com/todos/'+userInfo?.accId)
-                .then(response => response.json())
-                .then(json => console.log(json))
-
-              });
-              // getBackgroundLocation(setLocation);
-              // Encryptor.getLastLocation()
-              // .then((lat,long )=> {
-              //   console.log("got === ",lat,long )
-              // })
-              // .catch(res => {
-              //   console.log("success fully failed")
-              // })
-            },
-            {
-              delay: 5000,
-              onLoop: true,
-              taskId: 'taskid',
-              onError: e => console.log(`Error logging:`, e),
-            },
-          );
-
-          ReactNativeForegroundService.start({
-            id: 144,
-            title: 'RTM',
-            message: 'Tracking Your Location',
-          });
-        }}></Button>
-
-      <Button
-        title="Encrypt"
-        onPress={e => {
-          Encryptor.encrypt('ami zahid noakhailla')
-            .then(res => {
-              console.log('this is response', res);
-            })
-            .catch(err => {
-              console.log(err);
-            });
-        }}></Button>
-
-      <Button
-        title="calcel"
-        onPress={e => {
-          Encryptor.cancel('demoText');
-        }}></Button>
-
-      <Button
-        title="dialNumber"
-        onPress={e => {
-          Encryptor.dialNumber('123');
-        }}></Button>
-
-      <Button
-        title="Get Background Location"
-        onPress={e => {
-          // getBackgroundLocation();
-          Encryptor.getLastLocation()
-          .then((lat,long )=> {
-            console.log("got === ",lat,long )
-          })
-          .catch(res => {
-            console.log("success fully failed")
-          })
-        }}></Button>
-
-      {/* <Button
-        title="notify"
-        onPress={e => {
-          Encryptor.notifyAndroid()
-          .then(res => {
-            console.log(res)
-          })
-          .catch(err => {
-            console.log(err)
-          });
-        }}></Button> */}
-
-      <Text>
-        {' '}
-        Location is lat:{location?.latitude} long:{location?.longitude}
-      </Text>
-      <Text>
-        {' '}
-        Id{userInfo.accId}
-      </Text>
-    </SafeAreaView>
-  );
-};
-
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22,
   },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5
   },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
+  button: {
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2
   },
-  highlight: {
-    fontWeight: '700',
+  buttonOpen: {
+    backgroundColor: "#F194FF",
   },
+  buttonClose: {
+    backgroundColor: "#2196F3",
+  },
+  textStyle: {
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center"
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: "center"
+  }
 });
 
 export default App;
