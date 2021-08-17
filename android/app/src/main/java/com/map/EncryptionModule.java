@@ -9,6 +9,9 @@ import com.facebook.react.bridge.Callback;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
+import com.dantsu.escposprinter.EscPosCharsetEncoding;
+import android.util.DisplayMetrics;
+
 
 import android.os.Bundle;
 import android.os.Looper;
@@ -56,6 +59,10 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.dantsu.escposprinter.textparser.PrinterTextParserImg;
+import java.nio.charset.StandardCharsets;
+// import java.util.Base64;
+
 // import java.util.Map;
 // import java.util.HashMap;
 
@@ -65,6 +72,16 @@ import com.facebook.react.bridge.ReactMethod;
 import java.util.Map;
 import java.util.HashMap;
 import com.map.MainActivity;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Base64;
+import java.util.List;
+import java.util.ArrayList;
+import android.graphics.Paint;
+import android.graphics.Rect;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import java.io.ByteArrayOutputStream;
 
 import com.application.isradeleon.notify.Notify;
 
@@ -251,40 +268,119 @@ buildLocationCallBack();
         }
     }
 
+private Bitmap getBitmap(String text) {
+        
+        Paint paint = new Paint();
+        paint.setTextSize(30);
+        // paint.setTextSize(16.0F);
+
+        Rect bounds = new Rect();
+        paint.getTextBounds(text, 0, text.length(), bounds);
+        int width = bounds.width();
+        int height = bounds.height();
+
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        canvas.drawColor(Color.WHITE);
+        canvas.drawText(text, 20, 20, paint);
+        return bitmap;
+    }
+
      @ReactMethod
-    public void thermalPrinter(Promise promise) {
+    public void thermalPrinter(String caputedImg,Promise promise) {
+        //   String memo = "আপনি কি ডাটা সংরক্ষন করতে চান" + "\n" +
+        //     "\n";
+
+      String example = "আপনি কি ডাটা সংরক্ষন করতে চান";
+        byte[] bytes = example.getBytes();
+         String s = new String(bytes, StandardCharsets.UTF_8);
+         Bitmap arabic = getBitmap( "আফগান ছাড়তে বাধা না দিতে যুক্তরাষ্ট্রসহ ৬৫ দেশের বিবৃতি");
 
         try {
+
+            Bitmap baseBitmap = BitmapFactory.decodeResource(mReactContext.getResources(), R.drawable.bangla);
+            ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+            baseBitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteStream);
+            byte[] byteArray = byteStream.toByteArray();
+            // String receipt = Base64.encodeToString(byteArray,Base64.DEFAULT);
+            String receipt = caputedImg ;
+
+// caputedImg
+            // String receipt = "";
+
+    //          EscPosPrinter printer = new EscPosPrinter(BluetoothPrintersConnections.selectFirstPaired(), 203, 48f, 32,new EscPosCharsetEncoding("windows-1252",16));
+
+    // byte[] decodedString = Base64.decode(receipt, Base64.DEFAULT);
+    //                 Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+
+    //                 int width = decodedByte.getWidth(), height = decodedByte.getHeight();
+
+    //                 StringBuilder textToPrint = new StringBuilder();
+    //                 for(int y = 0; y < height; y += 256) {
+    //                     Bitmap bitmap = Bitmap.createBitmap(decodedByte, 0, y, width, (y + 256 >= height) ? height - y : 256);
+    //                     textToPrint.append("[C]<img>" + PrinterTextParserImg.bitmapToHexadecimalString(printer, bitmap) + "</img>\n");
+    //                 }
+                    
+    //                 textToPrint.append("[C]Printed!!!\n");
+    //                 printer.printFormattedTextAndCut(textToPrint.toString());
+
             EscPosPrinter printer = new EscPosPrinter(BluetoothPrintersConnections.selectFirstPaired(), 203, 48f, 32);
-            printer.printFormattedText(
-                // "[C]<img>" + PrinterTextParserImg.bitmapToHexadecimalString(printer, this.getApplicationContext().getResources().getDrawableForDensity(R.drawable.logo, DisplayMetrics.DENSITY_MEDIUM))+"</img>\n" +
-                "[L]\n" +
-                "[C]<u><font size='big'>ORDER N°045</font></u>\n" +
-                "[L]\n" +
-                "[C]================================\n" +
-                "[L]\n" +
-                "[L]<b>BEAUTIFUL SHIRT</b>[R]9.99e\n" +
-                "[L]  + Size : S\n" +
-                "[L]\n" +
-                "[L]<b>AWESOME HAT</b>[R]24.99e\n" +
-                "[L]  + Size : 57/58\n" +
-                "[L]\n" +
-                "[C]--------------------------------\n" +
-                "[R]TOTAL PRICE :[R]34.98e\n" +
-                "[R]TAX :[R]4.23e\n" +
-                "[L]\n" +
-                "[C]================================\n" +
-                "[L]\n" +
-                "[L]<font size='tall'>Customer :</font>\n" +
-                "[L]Raymond DUPONT\n" +
-                "[L]5 rue des girafes\n" +
-                "[L]31547 PERPETES\n" +
-                "[L]Tel : +33801201456\n" +
-                "[L]\n" +
-                "[C]<barcode type='ean13' height='10'>831254784551</barcode>\n" +
-                "[C]<qrcode size='20'>http://www.developpeur-web.dantsu.com/</qrcode>"
+
+              byte[] decodedString = Base64.decode(receipt, Base64.DEFAULT);
+Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+
+ int width =  decodedByte.getWidth(), height = decodedByte.getHeight();
+ StringBuilder textToPrint = new StringBuilder();
+                    for(int y = 0; y < height; y += 256) {
+                        Bitmap bitmap = Bitmap.createBitmap(decodedByte, 0, y, width, (y + 256 >= height) ? height - y : 256);
+                        textToPrint.append("[C]<img>" + PrinterTextParserImg.bitmapToHexadecimalString(printer, bitmap) + "</img>\n");
+                    }
+                    
+                    // textToPrint.append("[C]Printed!!!\n");
+                    printer.printFormattedTextAndCut(textToPrint.toString());
+
+// Bitmap resizedBitmap = Bitmap.createScaledBitmap(decodedByte, 800, 100, false);
+// decodedByte.recycle();
+
+// printer.printFormattedTextAndCut( "[C]<img>" + PrinterTextParserImg.bitmapToHexadecimalString(printer, resizedBitmap) + "</img>\n");
+
+            // printer.printFormattedText(
+            //     //  memo.getBytes(Charset.forName("UTF-8"));
+            //     // "[C]<img>" + PrinterTextParserImg.bitmapToHexadecimalString(printer, this.getApplicationContext().getResources().getDrawableForDensity(R.drawable.logo, DisplayMetrics.DENSITY_MEDIUM))+"</img>\n" +
+            //     "[C]<img >" + PrinterTextParserImg.bitmapToHexadecimalString(printer,bMapScaled)+"</img>\n" 
+            //     // "[C]<img>" + PrinterTextParserImg.bitmapToHexadecimalString(printer, resizedBitmap)+"</img>" 
+               
+            //     // "[C]<img>https://help.aronium.com/hc/user_images/4bXgr7C70h0dBx5UJSsWXQ.png</img>\n" 
+            //     // "[L]\n" +
+            //     // "[C]<u><font size='medium'>Akij Food & Beverage Limited</font></u>\n" +
+            //     // "[C]<u><font size='small'>Akij House, Bir Uttam Mir Shawkat Sarak</font></u>\n" +
+            //     // "[C]<u><font size='small'>Tejgaon, Dhaka:1208 </font></u>\n" +
+            //     // "[C]<u><font size='small'>HelpDesk: 01877721520 </font></u>\n" +
+            //     // "[L]\n" +
+            //     // "[C]================================\n" +
+            //     // "[L]\n" +
+            //     // "[L]<b>"+ s+"<font size='small'>vai store </font></b>\n" 
+            //     //  "[L]<b>কাস্টমার আইডি:<font size='small'>01877721520 </font></b>\n" 
+            //     // "[L]\n" +
+            //     // "[L]<b>AWESOME HAT</b>[R]24.99e\n" +
+            //     // "[L]  + Size : 57/58\n" +
+            //     // "[L]\n" +
+            //     // "[C]--------------------------------\n" +
+            //     // "[R]TOTAL PRICE :[R]34.98e\n" +
+            //     // "[R]TAX :[R]4.23e\n" +
+            //     // "[L]\n" +
+            //     // "[C]================================\n" +
+            //     // "[L]\n" +
+            //     // "[L]<font size='tall'>Customer :</font>\n" +
+            //     // "[L]Raymond DUPONT\n" +
+            //     // "[L]5 rue des girafes\n" +
+            //     // "[L]31547 PERPETES\n" +
+            //     // "[L]Tel : +33801201456\n" +
+            //     // "[L]\n" +
+            //     // "[C]<barcode type='ean13' height='10'>831254784551</barcode>\n" +
+            //     // "[C]<qrcode size='20'>http://www.developpeur-web.dantsu.com/</qrcode>"
             
-            );
+            // );
 
               Toast.makeText(mReactContext, "Thermal Printer success", Toast.LENGTH_LONG).show();
 
@@ -292,7 +388,7 @@ buildLocationCallBack();
         } catch (Exception e) {
             promise.reject("DECRYPTION_FAILED", "Decryption Failed");
 
-              Toast.makeText(mReactContext, "Thermal Printer Error", Toast.LENGTH_LONG).show();
+              Toast.makeText(mReactContext, e.getMessage(), Toast.LENGTH_LONG).show();
         }
 
     
